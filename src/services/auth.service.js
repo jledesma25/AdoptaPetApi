@@ -14,7 +14,7 @@ async function comparePassword(password, hash) {
 // Generar token JWT
 function generateToken(payload, expiresIn = "30m") {
   if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET no definido");
+    throw new Error("JWT_SECRET no está configurada. Configura la variable de entorno JWT_SECRET en Railway.");
   }
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 }

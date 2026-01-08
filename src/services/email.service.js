@@ -1,10 +1,20 @@
 const { Resend } = require("resend");
 const { buildEmailTemplate } = require("../utils/emailTemplate");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Inicializar Resend solo si existe la API key
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 // Enviar email con código OTP
 async function sendOTPEmail(correo, nombreCompleto, otpCode) {
+  if (!resend) {
+    throw new Error("RESEND_API_KEY no está configurada. Configura las variables de entorno.");
+  }
+
+  if (!process.env.EMAIL_FROM || !process.env.EMAIL_FROM_NAME) {
+    throw new Error("EMAIL_FROM o EMAIL_FROM_NAME no están configuradas. Configura las variables de entorno.");
+  }
+
   const emailHtml = buildEmailTemplate({
     headerSubtitle: "Recuperación de contraseña",
     sections: [
