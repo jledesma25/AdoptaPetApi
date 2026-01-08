@@ -1,0 +1,26 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+// Hashear contraseña
+async function hashPassword(password) {
+  return await bcrypt.hash(password, 10);
+}
+
+// Comparar contraseña con hash
+async function comparePassword(password, hash) {
+  return await bcrypt.compare(password, hash);
+}
+
+// Generar token JWT
+function generateToken(payload, expiresIn = "30m") {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET no definido");
+  }
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+}
+
+module.exports = {
+  hashPassword,
+  comparePassword,
+  generateToken,
+};
