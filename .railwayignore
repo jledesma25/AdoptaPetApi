@@ -1,0 +1,2 @@
+# Railway ignore file
+# Esto previene que Railway intente validar variables de entorno durante el build

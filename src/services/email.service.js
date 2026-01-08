@@ -1,12 +1,19 @@
 const { Resend } = require("resend");
 const { buildEmailTemplate } = require("../utils/emailTemplate");
 
-// Inicializar Resend solo si existe la API key
-const resendApiKey = process.env.RESEND_API_KEY;
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
+// Lazy initialization de Resend para evitar problemas durante build
+function getResendInstance() {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    return null;
+  }
+  return new Resend(resendApiKey);
+}
 
 // Enviar email con código OTP
 async function sendOTPEmail(correo, nombreCompleto, otpCode) {
+  const resend = getResendInstance();
+  
   if (!resend) {
     throw new Error("RESEND_API_KEY no está configurada. Configura las variables de entorno.");
   }
