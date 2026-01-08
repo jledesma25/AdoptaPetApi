@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "API backend para AdoptaPet - Aplicación de adopción de mascotas",
   "main": "main.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +17,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^16.6.1",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
     "resend": "^6.4.2"
