@@ -3,6 +3,13 @@ require("dotenv").config();
 const app = require("./src/config/server");
 const authRoutes = require("./src/routes/auth.routes");
 const passwordRoutes = require("./src/routes/password.routes");
+const { specs, swaggerUi } = require("./src/config/swagger");
+
+// Configurar Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs, {
+  customCss: ".swagger-ui .topbar { display: none }",
+  customSiteTitle: "AdoptaPet API Documentation",
+}));
 
 // Validar variables de entorno críticas al inicio
 function validateEnv() {
@@ -28,7 +35,22 @@ function validateEnv() {
   }
 }
 
-// Endpoint de prueba rápida
+/**
+ * @swagger
+ * /ping:
+ *   get:
+ *     summary: Endpoint de prueba
+ *     tags: [Utilidades]
+ *     description: Verifica que el servidor está funcionando
+ *     responses:
+ *       200:
+ *         description: Servidor respondiendo correctamente
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "pong 🏓"
+ */
 app.get("/ping", (req, res) => {
   res.send("pong 🏓");
 });
