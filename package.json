@@ -1,6 +1,6 @@
 {
   "name": "adoptapet-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API backend para AdoptaPet - Aplicación de adopción de mascotas",
   "main": "main.js",
   "engines": {
