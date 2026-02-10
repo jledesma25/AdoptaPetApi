@@ -3,6 +3,7 @@ require("dotenv").config();
 const app = require("./src/config/server");
 const authRoutes = require("./src/routes/auth.routes");
 const passwordRoutes = require("./src/routes/password.routes");
+const mascotaRoutes = require("./src/routes/mascota.routes");
 const { specs, swaggerUi } = require("./src/config/swagger");
 
 // Configurar Swagger
@@ -60,6 +61,9 @@ app.use("/", authRoutes);
 
 // Rutas de recuperación de contraseña
 app.use("/", passwordRoutes);
+
+// Rutas de mascotas
+app.use("/mascotas", mascotaRoutes);
 
 // Validar variables de entorno
 validateEnv();

@@ -21,4 +21,21 @@ function verifyToken(req, res, next) {
   }
 }
 
-module.exports = { verifyToken };
+// Middleware opcional: si hay token válido, pone req.user; si no, continúa sin error
+function optionalAuth(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) return next();
+
+  const token = authHeader.split(" ")[1];
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+  } catch {
+    // Token inválido o expirado, continuar sin usuario
+  }
+  next();
+}
+
+module.exports = { verifyToken, optionalAuth };
