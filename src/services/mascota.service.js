@@ -26,6 +26,7 @@ function mapMascotaToResponse(row, favoritosIds = []) {
     id: row.id,
     nombre: row.nombre,
     imagen_url: row.imagen_url,
+    tipo: row.tipo || "perro",
     raza: row.raza,
     edad: formatEdad(row.edad_valor, row.edad_unidad),
     genero: row.genero,
@@ -64,7 +65,7 @@ async function listarParaMenuPrincipal(tipo = "todos", usuarioId = null) {
   }
 
   const baseQuery = `
-    SELECT m.id, m.nombre, m.imagen_url, m.raza, m.genero,
+    SELECT m.id, m.nombre, m.imagen_url, m.tipo, m.raza, m.genero,
            m.edad_valor, m.edad_unidad, m.peso_kg, m.urgente, m.destacada,
            m.ubicacion_ciudad, m.ubicacion_pais, m.created_at,
            r.id AS refugio_id, r.nombre AS refugio_nombre, r.imagen_url AS refugio_imagen_url

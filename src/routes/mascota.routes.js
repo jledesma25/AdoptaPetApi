@@ -1,6 +1,6 @@
 const express = require("express");
 const mascotaController = require("../controllers/mascota.controller");
-const { optionalAuth } = require("../middlewares/auth");
+const { verifyToken } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -19,6 +19,8 @@ const router = express.Router();
  *           enum: [todos, perro, perros, gato, gatos, otro, otros]
  *           default: todos
  *         description: Filtro por tipo de mascota
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de mascotas destacadas y recién llegadas
@@ -64,7 +66,7 @@ const router = express.Router();
  */
 router.get(
   "/",
-  optionalAuth,
+  verifyToken,
   mascotaController.listarParaMenuPrincipal
 );
 
