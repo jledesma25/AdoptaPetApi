@@ -25,6 +25,28 @@ async function listarParaMenuPrincipal(req, res) {
   }
 }
 
+async function obtenerDetalle(req, res) {
+  try {
+    const mascotaId = Number(req.params.id);
+    if (Number.isNaN(mascotaId)) {
+      return res.status(400).json({ error: "ID de mascota inválido" });
+    }
+
+    const usuarioId = req.user?.id || null;
+    const detalle = await mascotaService.obtenerDetalleMascota(mascotaId, usuarioId);
+
+    if (!detalle) {
+      return res.status(404).json({ error: "Mascota no encontrada" });
+    }
+
+    res.json(detalle);
+  } catch (err) {
+    console.error("Error al obtener detalle de mascota:", err);
+    res.status(500).json({ error: "Error al obtener detalle de la mascota" });
+  }
+}
+
 module.exports = {
   listarParaMenuPrincipal,
+  obtenerDetalle,
 };

@@ -37,13 +37,13 @@ const router = express.Router();
  *                       id: { type: integer }
  *                       nombre: { type: string }
  *                       imagen_url: { type: string }
+ *                       tipo: { type: string }
  *                       raza: { type: string }
  *                       edad: { type: string, example: "3 meses" }
  *                       genero: { type: string, example: "macho" }
  *                       ubicacion: { type: string, example: "Madrid, ES" }
  *                       urgente: { type: boolean }
  *                       destacada: { type: boolean }
- *                       refugio: { type: object, nullable: true }
  *                       esFavorito: { type: boolean }
  *                 recienLlegados:
  *                   type: array
@@ -53,13 +53,13 @@ const router = express.Router();
  *                       id: { type: integer }
  *                       nombre: { type: string }
  *                       imagen_url: { type: string }
+ *                       tipo: { type: string }
  *                       raza: { type: string }
  *                       edad: { type: string }
  *                       genero: { type: string }
  *                       ubicacion: { type: string }
  *                       urgente: { type: boolean }
  *                       destacada: { type: boolean }
- *                       refugio: { type: object, nullable: true }
  *                       esFavorito: { type: boolean }
  *       500:
  *         description: Error del servidor
@@ -68,6 +68,37 @@ router.get(
   "/",
   verifyToken,
   mascotaController.listarParaMenuPrincipal
+);
+
+/**
+ * @swagger
+ * /mascotas/{id}:
+ *   get:
+ *     summary: Obtener detalle de una mascota
+ *     tags: [Mascotas]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la mascota
+ *     responses:
+ *       200:
+ *         description: Detalle completo de la mascota
+ *       400:
+ *         description: ID inválido
+ *       401:
+ *         description: Token requerido
+ *       404:
+ *         description: Mascota no encontrada
+ */
+router.get(
+  "/:id",
+  verifyToken,
+  mascotaController.obtenerDetalle
 );
 
 module.exports = router;

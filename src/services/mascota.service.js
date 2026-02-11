@@ -33,9 +33,6 @@ function mapMascotaToResponse(row, favoritosIds = []) {
     ubicacion: formatUbicacion(row.ubicacion_ciudad, row.ubicacion_pais),
     urgente: row.urgente || false,
     destacada: row.destacada || false,
-    refugio: row.refugio_nombre
-      ? { id: row.refugio_id, nombre: row.refugio_nombre, imagen_url: row.refugio_imagen_url }
-      : null,
     esFavorito: favoritosIds.includes(row.id),
   };
 }
@@ -66,11 +63,9 @@ async function listarParaMenuPrincipal(tipo = "todos", usuarioId = null) {
 
   const baseQuery = `
     SELECT m.id, m.nombre, m.imagen_url, m.tipo, m.raza, m.genero,
-           m.edad_valor, m.edad_unidad, m.peso_kg, m.urgente, m.destacada,
-           m.ubicacion_ciudad, m.ubicacion_pais, m.created_at,
-           r.id AS refugio_id, r.nombre AS refugio_nombre, r.imagen_url AS refugio_imagen_url
+           m.edad_valor, m.edad_unidad, m.urgente, m.destacada,
+           m.ubicacion_ciudad, m.ubicacion_pais
     FROM mascotas m
-    LEFT JOIN refugios r ON m.refugio_id = r.id AND r.deleted_at IS NULL
     WHERE m.deleted_at IS NULL
       AND m.estado_adopcion = 'en_adopcion'
       ${tipoFilter}
@@ -98,8 +93,74 @@ async function listarParaMenuPrincipal(tipo = "todos", usuarioId = null) {
   };
 }
 
+async function obtenerDetalleMascota(id, usuarioId = null) {
+  const detailQuery = `
+    SELECT m.id, m.nombre, m.imagen_url, m.tipo, m.raza, m.genero,
+           m.edad_valor, m.edad_unidad, m.peso_kg, m.estado_adopcion, m.urgente,
+           m.descripcion_personalidad, m.estado_salud, m.hogar_ideal,
+           m.requiere_entrevista, m.requiere_contrato, m.requiere_seguimiento,
+           m.ubicacion_ciudad, m.ubicacion_pais,
+           r.id AS refugio_id, r.nombre AS refugio_nombre, r.imagen_url AS refugio_imagen_url,
+           r.tipo_rol AS refugio_tipo_rol
+    FROM mascotas m
+    LEFT JOIN refugios r ON m.refugio_id = r.id AND r.deleted_at IS NULL
+    WHERE m.deleted_at IS NULL AND m.id = $1
+  `;
+
+  const detailResult = await pool.query(detailQuery, [id]);
+  if (detailResult.rowCount === 0) {
+    return null;
+  }
+
+  const mascota = detailResult.rows[0];
+
+  let esFavorito = false;
+  if (usuarioId) {
+    const favResult = await pool.query(
+      "SELECT 1 FROM usuario_favoritos WHERE usuario_id = $1 AND mascota_id = $2 LIMIT 1",
+      [usuarioId, id]
+    );
+    esFavorito = favResult.rowCount > 0;
+  }
+
+  return {
+    id: mascota.id,
+    nombre: mascota.nombre,
+    imagen_url: mascota.imagen_url,
+    estado_adopcion: mascota.estado_adopcion,
+    ubicacion: formatUbicacion(mascota.ubicacion_ciudad, mascota.ubicacion_pais),
+    // La distancia no está disponible en la BD actualmente
+    distancia_km: null,
+    stats: {
+      edad: formatEdad(mascota.edad_valor, mascota.edad_unidad),
+      genero: mascota.genero,
+      pesoKg: mascota.peso_kg,
+      raza: mascota.raza,
+    },
+    refugio: mascota.refugio_nombre
+      ? {
+          id: mascota.refugio_id,
+          nombre: mascota.refugio_nombre,
+          tipoRol: mascota.refugio_tipo_rol || "Dueño/Cuidador",
+          imagen_url: mascota.refugio_imagen_url,
+        }
+      : null,
+    personalidad: mascota.descripcion_personalidad,
+    salud: mascota.estado_salud,
+    hogarIdeal: mascota.hogar_ideal,
+    requisitos: {
+      requiereEntrevista: mascota.requiere_entrevista,
+      requiereContrato: mascota.requiere_contrato,
+      requiereSeguimiento: mascota.requiere_seguimiento,
+    },
+    urgente: mascota.urgente || false,
+    esFavorito,
+  };
+}
+
 module.exports = {
   listarParaMenuPrincipal,
+  obtenerDetalleMascota,
   formatEdad,
   formatUbicacion,
 };
