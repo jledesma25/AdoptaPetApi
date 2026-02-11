@@ -67,7 +67,7 @@ async function listarParaMenuPrincipal(tipo = "todos", usuarioId = null) {
            m.ubicacion_ciudad, m.ubicacion_pais
     FROM mascotas m
     WHERE m.deleted_at IS NULL
-      AND m.estado_adopcion = 'en_adopcion'
+      AND LOWER(m.estado_adopcion) = LOWER('En Adopción')
       ${tipoFilter}
   `;
 
