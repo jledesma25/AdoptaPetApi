@@ -115,12 +115,19 @@ async function obtenerDetalleMascota(id, usuarioId = null) {
   const mascota = detailResult.rows[0];
 
   let esFavorito = false;
+  let yaSolicitoAdopcion = false;
   if (usuarioId) {
     const favResult = await pool.query(
       "SELECT 1 FROM usuario_favoritos WHERE usuario_id = $1 AND mascota_id = $2 LIMIT 1",
       [usuarioId, id]
     );
     esFavorito = favResult.rowCount > 0;
+
+    const solicitudResult = await pool.query(
+      "SELECT 1 FROM solicitudes_adopcion WHERE usuario_id = $1 AND mascota_id = $2 LIMIT 1",
+      [usuarioId, id]
+    );
+    yaSolicitoAdopcion = solicitudResult.rowCount > 0;
   }
 
   return {
@@ -155,6 +162,7 @@ async function obtenerDetalleMascota(id, usuarioId = null) {
     },
     urgente: mascota.urgente || false,
     esFavorito,
+    yaSolicitoAdopcion,
   };
 }
 
