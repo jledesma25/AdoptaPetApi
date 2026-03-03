@@ -1,25 +1,33 @@
 const pool = require("../config/database");
+const userService = require("./user.service");
 
 /**
  * Crea una solicitud de adopción.
- * El usuario viene del token (req.user.id). La foto del hogar es la URL
- * que la app obtuvo tras subir la imagen a Firebase Storage.
+ * nombre_completo y correo se obtienen del usuario autenticado (usuarioId); el body solo envía telefono y el resto.
  *
- * @param {number} usuarioId - ID del usuario autenticado
- * @param {object} body - { mascota_id, nombre_completo, telefono, correo, tipo_vivienda, tiene_otras_mascotas, foto_hogar_url?, motivo_adopcion }
+ * @param {number} usuarioId - ID del usuario autenticado (del token)
+ * @param {object} body - { mascota_id, telefono, tipo_vivienda, tiene_otras_mascotas, foto_hogar_url?, motivo_adopcion }
  * @returns {object} Solicitud creada con id, estado, created_at
  */
 async function crearSolicitud(usuarioId, body) {
   const {
     mascota_id,
-    nombre_completo,
     telefono,
-    correo,
     tipo_vivienda,
     tiene_otras_mascotas,
     foto_hogar_url,
     motivo_adopcion,
   } = body;
+
+  const usuario = await userService.findUserById(usuarioId);
+  if (!usuario) {
+    const err = new Error("Usuario no encontrado");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const nombre_completo = [usuario.nombres, usuario.apellidos].filter(Boolean).join(" ").trim() || "Sin nombre";
+  const correo = usuario.correo || "";
 
   const result = await pool.query(
     `INSERT INTO solicitudes_adopcion (

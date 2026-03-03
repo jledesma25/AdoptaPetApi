@@ -24,9 +24,7 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - mascota_id
- *               - nombre_completo
  *               - telefono
- *               - correo
  *               - tipo_vivienda
  *               - motivo_adopcion
  *             properties:
@@ -34,16 +32,10 @@ const router = express.Router();
  *                 type: integer
  *                 description: ID de la mascota a adoptar
  *                 example: 1
- *               nombre_completo:
- *                 type: string
- *                 example: "María González"
  *               telefono:
  *                 type: string
+ *                 description: Teléfono/celular del solicitante (nombre y correo se obtienen del usuario autenticado)
  *                 example: "+52 55 1234 5678"
- *               correo:
- *                 type: string
- *                 format: email
- *                 example: "maria@correo.com"
  *               tipo_vivienda:
  *                 type: string
  *                 example: "Casa"

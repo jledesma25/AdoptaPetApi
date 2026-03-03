@@ -2,8 +2,8 @@ const adoptionService = require("../services/adoption.service");
 
 /**
  * POST /solicitudes-adopcion
- * Crea una solicitud de adopción. Usuario desde token.
- * Body: mascota_id, nombre_completo, telefono, correo, tipo_vivienda, tiene_otras_mascotas, foto_hogar_url (opcional), motivo_adopcion
+ * Crea una solicitud de adopción. Usuario desde token; nombre y correo se obtienen del usuario en BD.
+ * Body: mascota_id, telefono, tipo_vivienda, tiene_otras_mascotas, foto_hogar_url (opcional), motivo_adopcion
  */
 async function crearSolicitud(req, res) {
   try {
@@ -15,14 +15,8 @@ async function crearSolicitud(req, res) {
       return res.status(400).json({ error: "mascota_id es requerido y debe ser un número" });
     }
 
-    if (!body.nombre_completo?.trim()) {
-      return res.status(400).json({ error: "nombre_completo es requerido" });
-    }
     if (!body.telefono?.trim()) {
       return res.status(400).json({ error: "telefono es requerido" });
-    }
-    if (!body.correo?.trim()) {
-      return res.status(400).json({ error: "correo es requerido" });
     }
     if (!body.tipo_vivienda?.trim()) {
       return res.status(400).json({ error: "tipo_vivienda es requerido" });
@@ -38,9 +32,7 @@ async function crearSolicitud(req, res) {
 
     const solicitud = await adoptionService.crearSolicitud(usuarioId, {
       mascota_id: mascotaId,
-      nombre_completo: body.nombre_completo.trim(),
       telefono: body.telefono.trim(),
-      correo: body.correo.trim(),
       tipo_vivienda: body.tipo_vivienda.trim(),
       tiene_otras_mascotas: Boolean(body.tiene_otras_mascotas),
       foto_hogar_url: body.foto_hogar_url?.trim() || null,
@@ -53,7 +45,9 @@ async function crearSolicitud(req, res) {
     });
   } catch (err) {
     console.error("Error al crear solicitud de adopción:", err.message);
-    res.status(500).json({ error: "Error al registrar la solicitud de adopción" });
+    const status = err.statusCode || 500;
+    const message = status === 404 ? err.message : "Error al registrar la solicitud de adopción";
+    res.status(status).json({ error: message });
   }
 }
 

@@ -1,5 +1,14 @@
 const pool = require("../config/database");
 
+// Buscar usuario por ID (para obtener nombre y correo en solicitudes de adopción)
+async function findUserById(id) {
+  const result = await pool.query(
+    "SELECT id, nombres, apellidos, correo FROM usuarios WHERE id = $1 AND deleted_at IS NULL",
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
 // Buscar usuario por número de documento
 async function findUserByDocumento(numero_documento) {
   const result = await pool.query(
@@ -56,6 +65,7 @@ async function updateUserPassword(userId, passwordHash) {
 }
 
 module.exports = {
+  findUserById,
   findUserByDocumento,
   findUserByEmail,
   documentoExists,
