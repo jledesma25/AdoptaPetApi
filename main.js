@@ -4,6 +4,7 @@ const app = require("./src/config/server");
 const authRoutes = require("./src/routes/auth.routes");
 const passwordRoutes = require("./src/routes/password.routes");
 const mascotaRoutes = require("./src/routes/mascota.routes");
+const adoptionRoutes = require("./src/routes/adoption.routes");
 const { specs, swaggerUi } = require("./src/config/swagger");
 
 // Configurar Swagger
@@ -64,6 +65,9 @@ app.use("/", passwordRoutes);
 
 // Rutas de mascotas
 app.use("/mascotas", mascotaRoutes);
+
+// Rutas de solicitudes de adopción
+app.use("/solicitudes-adopcion", adoptionRoutes);
 
 // Validar variables de entorno
 validateEnv();
